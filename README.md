@@ -11,7 +11,10 @@ LokiJs - Express - AngularJs - NodeJs
 
 4)run node server.js
 
-5)Using postman or any other utility for making http requests you can do the following:
+5)Browse to http://localhost:8080 and enjoy the CRUD app based on LokiJS,Express,NodeJs and AngularJS.
+
+
+Alternatively using postman or any other utility for making http requests you can do the following:
 
 a)GET http://localhost:8080/api/contacts/
 
