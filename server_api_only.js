@@ -11,8 +11,6 @@ var db = new lokijs(DB_FILE);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/public'));
-
 var port = process.env.PORT || 8080; 
 
 fs.exists(DB_FILE, function (exists) {
@@ -41,7 +39,24 @@ var checkForContact = function(id){
 
 var noFound = 'No contact found';
 
-app.post('/api/contacts',function(req, res) {
+// ROUTES FOR OUR API
+// =============================================================================
+var router = express.Router(); 				
+
+// middleware to use for all requests
+router.use(function(req, res, next) {
+	console.log('Middleware called.');
+	next(); // make sure we go to the next routes and don't stop here
+});
+
+router.get('/', function(req, res) {
+	res.json({ message: 'Welcome to contacts api!' });	
+});
+
+
+router.route('/contacts')
+	// create a new contact (accessed at POST http://localhost:8080/api/contacts)
+	.post(function(req, res) {
 		var cntName = req.body.name;  // set the contacts name (comes from the request)		
 		db.loadDatabase(function () {
 			var contacts = db.getCollection('contacts');
@@ -49,9 +64,9 @@ app.post('/api/contacts',function(req, res) {
 			db.saveToDisk();
 		});
 		res.json(cntName + ' added');
-	});
-
-app.get('/api/contacts',function(req, res) {          
+	})
+	// get all the contacts (accessed at GET http://localhost:8080/api/contacts)
+	.get(function(req, res) {          
 		db.loadDatabase(function () {
 			var c = db.getCollection('contacts')
 			if (typeof c.data != 'undefined') {
@@ -63,7 +78,9 @@ app.get('/api/contacts',function(req, res) {
 		});
 	});
 
-app.get('/api/contacts/:contact_id',function(req, res) {		
+router.route('/contacts/:contact_id')
+	// get the contact with that id (accessed at GET http://localhost:8080/api/contacts/:contact_id)
+	.get(function(req, res) {		
 		db.loadDatabase(function () {
 			if(!checkForContact(parseInt(req.params.contact_id))){
 				res.json(noFound);								
@@ -73,9 +90,9 @@ app.get('/api/contacts/:contact_id',function(req, res) {
 				res.json(c.get(parseInt(req.params.contact_id)))
 			}
 		}); 
-	});
-
-app.put('/api/contacts/:contact_id',function(req, res) {
+	})
+	// update the contact with this id (accessed at PUT http://localhost:8080/api/contacts/:contact_id)
+	.put(function(req, res) {
 		db.loadDatabase(function () {
 			if(!checkForContact(parseInt(req.params.contact_id))){
 				res.json(noFound);								
@@ -88,9 +105,9 @@ app.put('/api/contacts/:contact_id',function(req, res) {
 				res.json('Contact updated');
 			}
 		});        
-	});
-
-app.delete('/api/contacts/:contact_id',function(req, res) {
+	})
+	// delete the contact with this id (accessed at DELETE http://localhost:8080/api/contacts/:contact_id)
+	.delete(function(req, res) {
 		db.loadDatabase(function () {			
 			if(!checkForContact(parseInt(req.params.contact_id))){
 				res.json(noFound);								
@@ -106,9 +123,8 @@ app.delete('/api/contacts/:contact_id',function(req, res) {
 	});	
 
 // REGISTER OUR ROUTES -------------------------------
-app.get('*', function(req, res) {
-    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
+// all of our routes will be prefixed with /api
+app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================

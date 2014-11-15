@@ -1,0 +1,64 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>LokiJS - Express - AngularJS - NodeJS App</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<style>
+		html 					{ overflow-y:scroll; }
+		body 					{ padding-top:50px; }
+		#contacts-list 				{ margin-bottom:30px; }
+		th,tr{text-align: center}
+	</style>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+	<script type="text/javascript" src="app.js"></script>
+
+</head>
+<body ng-controller="mainController" ng-init="getContacts()">
+	<div class="container">
+		<div class="jumbotron text-center">
+			<h2>Number of contacts <span class="label label-info">{{ contacts.length }}</span></h2>
+		</div>
+		<div id="contacts-list" class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<table style="width:100%">
+					<tr>
+						<th>Num</th>
+						<th>Name</th>
+						<th>Delete</th>
+						<th>Edit</th>
+					</tr>
+					<tr ng-repeat="contact in contacts" style="padding:10px;">
+						<td width="10%">{{$index+1}}</td>
+						<td width="70%">															
+						 <input type='text' ng-model='contact.name' ng-readonly="!selectedContact[$index]"/> 		
+						</td width="10%">
+						<td>
+							<label>
+								<input type="checkbox" ng-click="deleteContact(contact.id)"> 
+							</label>							
+						</td>
+						<td>
+							<label>
+								<input type="checkbox" ng-change="editContact(contact.id, $index, contact.name)" ng-model="selectedContact[$index]">
+							</label>							
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="contacts-form" class="row">
+			<div class="col-sm-4 col-sm-offset-4 text-center">
+				<form>
+					<div class="form-group">
+						<input type="text" class="form-control input-lg text-center" placeholder="Type your contact" ng-model="formData.name">
+					</div>
+					<button type="submit" class="btn btn-primary btn-lg" ng-click="createContact()">Add</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
